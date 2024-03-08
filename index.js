@@ -100,12 +100,16 @@ const LessonSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    week: {},
-    day: {
+    week: {
+        type: Number, 
+        required: true, 
+        min: 1, 
+        max: 52},
+    weekDay: {
         type: Number,
         required: true,
-        min: 0,
-        max: 4
+        min: 1,
+        max: 5,
     },
     startTime: {
         type: Number,
@@ -229,11 +233,10 @@ app.post('/lessons/', async ({ body, set }) => {
     newLesson.course    = body.course;
     newLesson.teacher   = body.teacher;
     newLesson.class     = body.class;
+    newLesson.week      = body.week;
     newLesson.weekDay   = body.weekDay;
     newLesson.startTime = body.startTime;
     newLesson.endTime   = body.endTime;
-    newLesson.date      = body.date;
-    newLesson.month     = body.month;
     // Vibecheck
     let message = "Error:\n";
     if (! await Classroom.exists    ({name : newLesson.classroom})) { set.status = 400; message += "Ghost classroom detected\n"; }
@@ -309,22 +312,24 @@ app.delete('/lessons/', async ({ body, set }) => { // Finish this after vibechec
     let targetCourse    = body.course;
     let targetTeacher   = body.teacher;
     let targetClass     = body.class;
-    let targetDay       = body.date;
-    let targetMonth     = body.month;
+    let targetWeek      = body.week;
+    let targetDay       = body.weekDay;
     // Check existing
+    set.status = 400;
     if (! await Lesson.exists({ course  : targetCourse }))  { return "Course not found"; }
     if (! await Lesson.exists({ teacher : targetTeacher })) { return "Teacher not found"; }
     if (! await Lesson.exists({ class   : targetClass }))   { return "Class not found"; }
-    if (! await Lesson.exists({ date    : targetDay, 
-                                month : targetMonth }))     { return "Date/Month not found"; }
+    if (! await Lesson.exists({ week    : targetWeek, 
+                                weekDay : targetDay }))     { return "Week/Day not found"; }
     // Delete!
     try { await Lesson.deleteOne({
             teacher : targetTeacher,
             course  : targetCourse,
             class   : targetClass,
-            date    : targetDay,
-            month   : targetMonth }); } 
-    catch (error) { console.log( error); set.status = 400; return "Deletion: Faliure"; }
+            week    : targetWeek,
+            weekDay : targetDay }); } 
+    catch (error) { console.log( error); return "Deletion: Faliure"; }
+    set.status = 200;
     return "Deletion: Success";
 });
 app.delete('/students/', async ({ body, set }) => {

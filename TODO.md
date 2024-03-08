@@ -42,5 +42,5 @@
 - [ ] Edit Course Name (-//-)
 - [ ] Edit Classroom Name (-//-)
 
-- [ ] Add multiple lessions in a row unsing a single template
+- [ ] Add multiple lessions in a row using a single template
 - [ ] Edit template, and have all related template lessons updated to match
