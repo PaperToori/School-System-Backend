@@ -23,8 +23,8 @@
  - [X] DELETE lessons
 
  - [X] Lessons : Vibecheck
- - [ ] Lessons : Collision check // check with Sebbe about Date format
- - [ ] Group   : Vibecheck
+ - [ ] Lessons : Collision check // check with Sebbe abou- already checked
+ - [X] Group   : Vibecheck
  - [X] Student : Vibecheck
 
  - [X] Delete command sends false positives on less-than-full successes (ex. SvenA exists. requests to delete "Sven", db finds SvenA, confirms he exists, but doesn't delete him. Sends false positive on deletion request.) This has no impact on data sequrity, will only actally delete if both strings are pefect match.  
@@ -32,10 +32,10 @@
 - [X] Edit Classroom
 - [X] Edit Course
 - [X] Edit Student Name 
-- [ ] Edit Student Course
-- [ ] Edit Student Contact Info
-- [ ] Edit Teacher Name 
-- [ ] Edit Teacher Contact Info
+- [X] Edit Student Course
+- [X] Edit Student Contact Info
+- [X] Edit Teacher Name 
+- [X] Edit Teacher Contact Info
 - [ ] Edit Group Name (and update across all who cites previous name)
 - [ ] Add specific student to group
 - [ ] Remove specific student from group
