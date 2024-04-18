@@ -53,8 +53,8 @@ const StudentSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    course: {
-        type: String,
+    tags: {
+        type: [String],
         required: true
     },
     gmail: {
@@ -105,7 +105,7 @@ const LessonSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    class: {
+    group: {
         type: String,
         required: true
     },
@@ -159,11 +159,10 @@ const dbURI = `mongodb+srv://garrattkarl:${process.env.DB_PASSWORD}@cluster0.ar0
 
 try {
     await mongoose.connect(dbURI);
+    console.log("Connected to database ...");
 } catch (error) {
     console.log(`Could not connect to database: ${error.message}`);
 }
-
-console.log("Connected to database ...");
 
 const app = new Elysia();
 
@@ -184,34 +183,11 @@ app.get('/subjects', async () => {
 app.get('/groups/', async () => {
     return await Group.find();
 });
-app.get('/groups/s/:name', async ({ params }) => {
-    let studentName = params.name.replaceAll(/(%20)/g, " ");
-    console.log(studentName);
-    return await Group.find({ members: studentName });
-});
-app.get('/groups/g/:name', async ({ params }) => {
-    return await Group.findOne({ name: params.name.replaceAll(/(%20)/g, " ") });
-});
 app.get('/lessons/', async () => {
     return await Lesson.find();
 });
-app.get('/lessons/c/:classroom', async ({ params }) => {
-    return await Lesson.find({ classroom : params.classroom });
-});
-app.get('/lessons/g/:class', async ({ params }) => {
-    return await Lesson.find({ class : params.class });
-});
-app.get('/lessons/t/:teacher', async ({ params }) => {
-    return await Lesson.find({ teacher : params.teacher });
-});
 app.get('/students/', async () => {
     return await Student.find({});
-});
-app.get('/students/s/:name', async ({ params }) => {
-    return await Student.findOne({ name: params.name });
-});
-app.get('/students/c/:course', async ({ params }) => {
-    return await Student.find({ course: params.course });
 });
 app.get('/teachers/', async () => {
     return await Teacher.find();
@@ -222,26 +198,26 @@ app.get('/teachers/', async () => {
 
 app.post('/classrooms/', async ({ body, set }) => {
     let newClassroom = new Classroom();
-    newClassroom.name = body.name;
+    newClassroom.name = JSON.parse(body).name;
     try { await newClassroom.save(); }
     catch (error) { console.log(error.message); set.status = 400; return "Post: Faliure"; }
     return "Post: Success";
 });
 app.post('/courses/', async ({ body, set }) => {
     let newCourse = new Course();
-    newCourse.name = body.name;
+    newCourse.name = JSON.parse(body).name;
     try { await newCourse.save(); }
     catch (error) { console.log(error.message); set.status = 400; return "Post: Faliure"; }
     return "Post: Success";
 });
 app.post('/subjects/', async ({ body, set }) => {
     let newSubject = new Subject();
-    newSubject.name = body.name;
+    newSubject.name = JSON.parse(body).name;
     try { await newSubject.save(); }
     catch (error) { console.log(error.message); set.status = 400; return "Post: Faliure"; }
     return "Post: Success";
 });
-app.post('/groups/', async ({ body, set }) => {
+app.post('/groups/', async ({ body, set }) => { // ...Not yet
     let newGroup = new Group();
     newGroup.name = body.name;
     newGroup.members = [...body.members];
@@ -249,21 +225,21 @@ app.post('/groups/', async ({ body, set }) => {
     try { await newGroup.save(); }
     catch (error) { console.log(error.message); set.status = 400; }
 });
-app.post('/lessons/', async ({ body, set }) => {
+app.post('/lessons/', async ({ body, set }) => { // Not yet
     set.status = 400;
     // Input from body
     let newLesson = new Lesson();
     newLesson.classroom = body.classroom;
     newLesson.subject = body.subject;
     newLesson.teacher = body.teacher;
-    newLesson.class = body.class;
+    newLesson.group = body.group;
     newLesson.week = body.week;
     newLesson.weekDay = body.weekDay;
     newLesson.startTime = body.startTime;
     newLesson.endTime = body.endTime;
     // Check for timetravel
     if (newLesson.startTime > newLesson.endTime) { return "Time travel detected."; }
-    
+
     // Save!
     try { await newLesson.save(); }
     catch (error) { console.log(error.message); return "Post: Faliure"; }
@@ -272,12 +248,13 @@ app.post('/lessons/', async ({ body, set }) => {
 });
 app.post('/students/', async ({ body, set }) => {
     set.status = 400;
+    let parsedBody = JSON.parse(body);
     // Fill in from body
     let newStudent = new Student();
-    newStudent.name = body.name;
-    newStudent.course = body.course;
-    newStudent.gmail = body.gmail;
-    newStudent.phoneNumber = body.phoneNumber;
+    newStudent.name = parsedBody.name;
+    newStudent.course = parsedBody.course;
+    newStudent.gmail = parsedBody.gmail;
+    newStudent.phoneNumber = parsedBody.phoneNumber;
     // Save!
     try { await newStudent.save(); }
     catch (error) { console.log(error.message); return "Post: Faliure"; }
@@ -285,11 +262,13 @@ app.post('/students/', async ({ body, set }) => {
     return "Post: Success";
 });
 app.post('/teachers/', async ({ body, set }) => {
+    // 
+    let parsedBody = JSON.parse(body);
     // Input from body
     let newTeacher = new Teacher();
-    newTeacher.name = body.name;
-    newTeacher.gmail = body.gmail;
-    newTeacher.phoneNumber = body.phoneNumber;
+    newTeacher.name = parsedBody.name;
+    newTeacher.gmail = parsedBody.gmail;
+    newTeacher.phoneNumber = parsedBody.phoneNumber;
     // Save!
     try { await newTeacher.save(); }
     catch (error) { console.log(error.message); set.status = 400; return "Post: Faliure"; }
@@ -343,24 +322,24 @@ app.delete('/lessons/', async ({ body, set }) => {
     // Input from body
     let targetSubject = body.subject;
     let targetTeacher = body.teacher;
-    let targetClass = body.class;
+    let targetGroup = body.group;
     let targetWeek = body.week;
     let targetDay = body.weekDay;
     // Check existing
     set.status = 400;
-    if (! await Lesson.exists({ course: targetSubject })) { return "Course not found"; }
-    if (! await Lesson.exists({ teacher: targetTeacher })) { return "Teacher not found"; }
-    if (! await Lesson.exists({ class: targetClass })) { return "Class not found"; }
+    if (! await Lesson.exists({ course: targetSubject   })) { return "Course not found"; }
+    if (! await Lesson.exists({ teacher: targetTeacher  })) { return "Teacher not found"; }
+    if (! await Lesson.exists({ group: targetGroup      })) { return "Group not found"; }
     if (! await Lesson.exists({
-        week: targetWeek,
-        weekDay: targetDay
-    })) { return "Week/Day not found"; }
+                                week: targetWeek,
+                                weekDay: targetDay
+                                                        })) { return "Week/Day not found"; }
     // Delete!
     try {
         await Lesson.deleteOne({
             teacher: targetTeacher,
             course: targetSubject,
-            class: targetClass,
+            group: targetGroup,
             week: targetWeek,
             weekDay: targetDay
         });
@@ -420,7 +399,7 @@ app.patch('/lessons/', async ({ body, set }) => { // May god have mercy on my so
         classroom: body.classroom,
         subject: body.subject,
         teacher: body.teacher,
-        class: body.class,
+        group: body.group,
         week: body.week,
         weekDay: body.weekDay
     })) { return "Specified lesson doesn't exist."; }
@@ -428,7 +407,7 @@ app.patch('/lessons/', async ({ body, set }) => { // May god have mercy on my so
         classroom: body.classroom,
         subject: body.subject,
         teacher: body.teacher,
-        class: body.class,
+        group: body.group,
         week: body.week,
         weekDay: body.weekDay
     });
@@ -486,7 +465,7 @@ app.patch('/teachers/', async ({ body, set }) => {
 // ---------------------------------------------------------
 // GROUP REQUESTS -------------------------------------------
 
-
+// Not sure if I'll ever end up filling this section...
 
 // ---------------------------------------------------------
 
@@ -516,16 +495,3 @@ app.delete('/burnitall', async () => {
 
 // Put this on bottom
 app.listen(8080, () => console.log("Webserver up and running at http://localhost:8080\n"));
-
-
-
-// let exam = await Group.find({});
-
-// exam.forEach(display);
-
-// function display(element){
-//     element.members.forEach(reveal)
-//     function reveal(element){
-//         console.log(element);
-//     }
-// }
