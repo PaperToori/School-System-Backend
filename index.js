@@ -144,6 +144,14 @@ const LessonSchema = new mongoose.Schema({
 });
 const Lesson = mongoose.model('Lesson', LessonSchema);
 
+// // ---------------------------------------------------------
+// // Firebase ------------------------------------------------
+// import { database } from "/src/firebase.js";
+// import { collection, getDocs, doc, addDoc, getDoc } from "firebase/firestore";
+// import { getAuth } from 'firebase/auth';
+// // Retrieve auth store from context
+// const auth = getAuth();
+
 // ---------------------------------------------------------
 // Server --------------------------------------------------
 
