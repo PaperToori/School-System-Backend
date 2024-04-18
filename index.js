@@ -175,34 +175,11 @@ app.get('/subjects', async () => {
 app.get('/groups/', async () => {
     return await Group.find();
 });
-app.get('/groups/s/:name', async ({ params }) => {
-    let studentName = params.name.replaceAll(/(%20)/g, " ");
-    console.log(studentName);
-    return await Group.find({ members: studentName });
-});
-app.get('/groups/g/:name', async ({ params }) => {
-    return await Group.findOne({ name: params.name.replaceAll(/(%20)/g, " ") });
-});
 app.get('/lessons/', async () => {
     return await Lesson.find();
 });
-app.get('/lessons/c/:classroom', async ({ params }) => {
-    return await Lesson.find({ classroom: params.classroom });
-});
-app.get('/lessons/g/:group', async ({ params }) => {
-    return await Lesson.find({ group: params.group });
-});
-app.get('/lessons/t/:teacher', async ({ params }) => {
-    return await Lesson.find({ teacher: params.teacher });
-});
 app.get('/students/', async () => {
     return await Student.find({});
-});
-app.get('/students/s/:name', async ({ params }) => {
-    return await Student.findOne({ name: params.name });
-});
-app.get('/students/c/:course', async ({ params }) => {
-    return await Student.find({ course: params.course });
 });
 app.get('/teachers/', async () => {
     return await Teacher.find();
