@@ -21,6 +21,7 @@ import { Teacher } from "./schemas/teacher.js";
 
 //Move over to firebase.js file
 import admin from 'firebase-admin';
+import { test } from "bun:test";
 
 let serviceAccount = require("./desk-17e4d-firebase-adminsdk-xgca0-0de33bf30a.json");
 
@@ -64,9 +65,11 @@ try {
 } catch (error) {
     console.log(`Could not connect to database: ${error.message}`);
 }
+import { test_router } from "./routers/test-router.js";
 
 const app = new Elysia();
 
+app.use(test_router)
 app.use(cors());
 
 // ---------------------------------------------------------
@@ -121,8 +124,8 @@ app.get("/teachers/", async () => {
 // POST REQUESTS -------------------------------------------
 app.post("/auth/user/", async ({ body, set }) => {
     let newUser = new UserDB();
-    newUser.userID = body.id;
-    newUser.permission = body.permission;
+    newUser.userID = JSON.parse(body).id;
+    newUser.permission = JSON.parse(body).permission;
     try {
         await newUser.save();
     } catch (error) {
