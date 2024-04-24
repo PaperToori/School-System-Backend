@@ -2,159 +2,25 @@ import mongoose from "mongoose";
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { UserDB } from "./schemas/users.js";
+import { Classroom } from "./schemas/classroom.js";
+import { Course } from "./schemas/course.js";
+import { Group } from "./schemas/group.js";
+import { Lesson } from "./schemas/lesson.js";
+import { Student } from "./schemas/student.js";
+import { Subject } from "./schemas/subject.js";
+import { Teacher } from "./schemas/teacher.js";
+//import { LessonTemplate } from "./schemas/lessonTemplate.js"; //not in use
+//import { LessonTime } from "./schemas/lessonTime.js"; //not in use
+
 // ---------------------------------------------------------
 // Schemas -------------------------------------------------
 
-const CourseSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-});
-const Course = mongoose.model("Course", CourseSchema);
-
-const SubjectSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-});
-const Subject = mongoose.model("Subject", SubjectSchema);
-
-const ClassroomSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-});
-const Classroom = mongoose.model("Classroom", ClassroomSchema);
-
-const TeacherSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    gmail: {
-        type: String,
-    },
-    phoneNumber: {
-        type: String,
-    },
-});
-const Teacher = mongoose.model("Teacher", TeacherSchema);
-
-const StudentSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    tags: {
-        type: [String],
-        required: true,
-    },
-    gmail: {
-        type: String,
-    },
-    phoneNumber: {
-        type: String,
-    },
-});
-const Student = mongoose.model("Student", StudentSchema);
-
-const GroupSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    members: {
-        type: [String],
-    },
-});
-const Group = mongoose.model("Group", GroupSchema);
-
-const LessonTimeSchema = new mongoose.Schema({
-    weekDay: Number,
-    startTime: Number,
-    endTime: Number,
-});
-const LessonTime = mongoose.model("LessonTime", LessonTimeSchema);
-
-const LessonTemplateSchema = new mongoose.Schema({
-    name: String,
-    template: [LessonTimeSchema],
-    weeks: [Number],
-});
-const LessonTemplate = mongoose.model("LessonTemplate", LessonTemplateSchema);
-
-const LessonSchema = new mongoose.Schema({
-    classroom: {
-        type: String,
-        required: true,
-    },
-    subject: {
-        type: String,
-        required: true,
-    },
-    teacher: {
-        type: String,
-        required: true,
-    },
-    group: {
-        type: String,
-        required: true,
-    },
-    week: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 53,
-    },
-    weekDay: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 5,
-    },
-    startTime: {
-        type: Number,
-        required: true,
-        min: 0,
-    },
-    endTime: {
-        type: Number,
-        required: true,
-        max: 143,
-    },
-    date: {
-        type: Number,
-        min: 1,
-        max: 31,
-    },
-    month: {
-        type: Number,
-        min: 1,
-        max: 12,
-    },
-});
-const Lesson = mongoose.model("Lesson", LessonSchema);
 
 // ---------------------------------------------------------
 // Firebase ------------------------------------------------
 
 //Move over to firebase.js file
-//import { getAuth } from "firebase/auth";
-//import { database } from './firebase.js'
-import { initializeApp, applicationDefault, cert } from 'firebase-admin/app';
 import admin from 'firebase-admin';
-import { getFirestore, Timestamp, FieldValue, Filter } from 'firebase-admin/firestore';
-//import { doc } from "firebase/firestore";
-//import { collection, getDoc, doc } from 'firebase/firestore';
 
 let serviceAccount = require("./desk-17e4d-firebase-adminsdk-xgca0-0de33bf30a.json");
 
