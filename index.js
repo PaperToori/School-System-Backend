@@ -20,39 +20,8 @@ import { Teacher } from "./schemas/teacher.js";
 // Firebase ------------------------------------------------
 
 //Move over to firebase.js file
-import admin from 'firebase-admin';
-import { test } from "bun:test";
 
-let serviceAccount = require("./desk-17e4d-firebase-adminsdk-xgca0-0de33bf30a.json");
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
-
-async function Authenticator(permission, id) {
-    let permitted = false;
-    let uid = null;
-    await admin.auth().verifyIdToken(id)
-        .then((decodedToken) => {
-            uid = decodedToken.uid;
-        })
-        .catch((error) => {
-            console.log("Error in Authenticator function")
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            console.error(errorCode);
-            console.error(errorMessage);
-        });
-    const user = await UserDB.findOne({ userID: uid });
-    console.log(user);
-    if (user != null) {
-        if (user.permission >= permission) {
-            permitted = true;
-        }
-    }
-    console.log("returning", permitted);
-    return permitted;
-}
 
 // ---------------------------------------------------------
 // Server --------------------------------------------------
@@ -66,38 +35,18 @@ try {
     console.log(`Could not connect to database: ${error.message}`);
 }
 import { test_router } from "./routers/test-router.js";
+import { auth_router } from "./routers/auth-router.js";
+
 
 const app = new Elysia();
 
-app.use(test_router)
+app.use(test_router);
+app.use(auth_router);
 app.use(cors());
 
 // ---------------------------------------------------------
 // GET REQUESTS --------------------------------------------
-app.guard(
-    {
-        //Beforehandle
-        async beforeHandle({ set, headers }) {
-            let id = headers.id;
-            if (await Authenticator(1, id) == false) {
-                console.log(id);
-                console.log("NOT APPROVED!");
-                return (set.status = 'Unauthorized')
-            }
-        }
-        //Beforehandle
-    },
-    (app) =>
-        app
-            .get('/test/'), ({ }) => {
-                console.log("guard approved");
-                return "guard approved";
-            }
-);
 
-app.get("/auth/user/", async () => {
-    return await UserDB.find();
-});
 app.get("/classrooms/", async () => {
     return await Classroom.find();
 });
@@ -122,19 +71,7 @@ app.get("/teachers/", async () => {
 
 // ---------------------------------------------------------
 // POST REQUESTS -------------------------------------------
-app.post("/auth/user/", async ({ body, set }) => {
-    let newUser = new UserDB();
-    newUser.userID = JSON.parse(body).id;
-    newUser.permission = JSON.parse(body).permission;
-    try {
-        await newUser.save();
-    } catch (error) {
-        console.log(error.message);
-        set.status = 400;
-        return "Post: Faliure";
-    }
-    return "Post: Success";
-});
+
 app.post("/classrooms/", async ({ body, set }) => {
     let newClassroom = new Classroom();
     newClassroom.name = JSON.parse(body).name;
