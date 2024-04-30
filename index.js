@@ -11,6 +11,8 @@ import { Student } from "./schemas/student.js";
 import { Subject } from "./schemas/subject.js";
 import { Teacher } from "./schemas/teacher.js";
 import { Teacher } from "./schemas/teacher.js";
+import { Tag } from "./schemas/tag.js";
+import { Guardian } from "./schemas/guardian.js";
 //import { LessonTemplate } from "./schemas/lessonTemplate.js"; //not in use
 //import { LessonTime } from "./schemas/lessonTime.js"; //not in use
 //routers
@@ -40,6 +42,8 @@ try {
 
 const app = new Elysia();
 
+app.use(cors());
+
 app.use(test_router);
 app.use(auth_router);
 app.use(classrooms_router);
@@ -50,7 +54,6 @@ app.use(students_router);
 app.use(subjects_router);
 app.use(teacher_router);
 
-app.use(cors());
 
 // ---------------------------------------------------------
 // GET REQUESTS --------------------------------------------

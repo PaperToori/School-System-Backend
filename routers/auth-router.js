@@ -62,7 +62,7 @@ export const auth_router = new Elysia({ prefix: '/auth' })
             async beforeHandle({ set, headers }) {
                 console.log("receieved");
                 let id = headers.id;
-                if (await Authenticator(3, id) == false) {
+                if (await Authenticator(-1, id) == false) {
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
