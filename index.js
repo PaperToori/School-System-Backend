@@ -10,6 +10,7 @@ import { Lesson } from "./schemas/lesson.js";
 import { Student } from "./schemas/student.js";
 import { Subject } from "./schemas/subject.js";
 import { Teacher } from "./schemas/teacher.js";
+import { Teacher } from "./schemas/teacher.js";
 //import { LessonTemplate } from "./schemas/lessonTemplate.js"; //not in use
 //import { LessonTime } from "./schemas/lessonTime.js"; //not in use
 //routers
@@ -23,14 +24,6 @@ import { students_router } from "./routers/students-router.js";
 import { subjects_router } from "./routers/subjects-router.js";
 import { teacher_router } from "./routers/teachers-router.js";
 
-const TagSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true
-    }
-});
-const Tag = mongoose.model('Tag', TagSchema);
 
 // ---------------------------------------------------------
 // Server --------------------------------------------------
