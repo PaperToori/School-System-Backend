@@ -5,14 +5,14 @@ import { cors } from '@elysiajs/cors';
 // ---------------------------------------------------------
 // Schemas -------------------------------------------------
 
-const CourseSchema = new mongoose.Schema({
+const TagSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         unique: true
     }
 });
-const Course = mongoose.model('Course', CourseSchema);
+const Tag = mongoose.model('Tag', TagSchema);
 
 const SubjectSchema = new mongoose.Schema({
     name: {
@@ -157,7 +157,6 @@ try {
 }
 
 const app = new Elysia();
-
 app.use(cors());
 
 // ---------------------------------------------------------
@@ -166,8 +165,8 @@ app.use(cors());
 app.get('/classrooms/', async () => {
     return await Classroom.find();
 });
-app.get('/courses/', async () => {
-    return await Course.find();
+app.get('/tags/', async () => {
+    return await Tag.find();
 });
 app.get('/subjects', async () => {
     return await Subject.find();
@@ -185,6 +184,12 @@ app.get('/teachers/', async () => {
     return await Teacher.find();
 });
 
+app.get('deleteTag/:target', async ({ params }) => {
+    if (! await Tag.exists({ name : params.target })) { return "Doesn't Exist"; }
+    await Tag.deleteOne({ name : params.target });
+    return "Deletion: Success";
+});
+
 // ---------------------------------------------------------
 // POST REQUESTS -------------------------------------------
 
@@ -195,10 +200,10 @@ app.post('/classrooms/', async ({ body, set }) => {
     catch (error) { console.log(error.message); set.status = 400; return "Post: Faliure"; }
     return "Post: Success";
 });
-app.post('/courses/', async ({ body, set }) => {
-    let newCourse = new Course();
-    newCourse.name = JSON.parse(body).name;
-    try { await newCourse.save(); }
+app.post('/tags/', async ({ body, set }) => {
+    let newTag = new Tag();
+    newTag.name = JSON.parse(body).name;
+    try { await newTag.save(); }
     catch (error) { console.log(error.message); set.status = 400; return "Post: Faliure"; }
     return "Post: Success";
 });
@@ -209,13 +214,14 @@ app.post('/subjects/', async ({ body, set }) => {
     catch (error) { console.log(error.message); set.status = 400; return "Post: Faliure"; }
     return "Post: Success";
 });
-app.post('/groups/', async ({ body, set }) => { // ...Not yet
+app.post('/groups/', async ({ body, set }) => {
+    let parsedBody = JSON.parse(body);
     let newGroup = new Group();
-    newGroup.name = body.name;
-    newGroup.members = [...body.members];
-
+    newGroup.name = parsedBody.name;
+    newGroup.members = [...parsedBody.members];
     try { await newGroup.save(); }
     catch (error) { console.log(error.message); set.status = 400; }
+    return "Post: Success";
 });
 app.post('/lessons/', async ({ body, set }) => { // Not yet
     set.status = 400;
@@ -238,15 +244,15 @@ app.post('/lessons/', async ({ body, set }) => { // Not yet
     set.status = 200;
     return "Post: Success";
 });
-app.post('/students/', async ({ body, set }) => {
+app.post('/students/', async ({ body, set }) => { 
     set.status = 400;
     let parsedBody = JSON.parse(body);
     // Fill in from body
     let newStudent = new Student();
     newStudent.name = parsedBody.name;
-    newStudent.course = parsedBody.course;
     newStudent.gmail = parsedBody.gmail;
     newStudent.phoneNumber = parsedBody.phoneNumber;
+    newStudent.tags = parsedBody.tags;
     // Save!
     try { await newStudent.save(); }
     catch (error) { console.log(error.message); return "Post: Faliure"; }
@@ -280,12 +286,14 @@ app.delete('/classrooms/', async ({ body, set }) => {
     set.status = 200;
     return "Deletion: Success";
 });
-app.delete('/courses/', async ({ body, set }) => {
-    let target = body.name;
+app.delete('/tags/:target', async ({ params, set }) => {
+    let target = params.target;
+    console.log(target);
+    console.log(await Tag.exists({ name: target }));
     set.status = 400;
-    if ("" == target) { return "No course was specified." }
-    if (! await Course.exists({ name: target })) { return "Course does not exist."; }
-    try { await Course.deleteOne({ name: target }); }
+    if ("" == target) { return "No tag was specified." }
+    if (! await Tag.exists({ name: target })) { return "Tag does not exist."; }
+    try { await Tag.deleteOne({ name: target }); }
     catch (error) { console.log(error); return "Deletion: Faliure"; }
     set.status = 200;
     return "Deletion: Success";
@@ -319,7 +327,7 @@ app.delete('/lessons/', async ({ body, set }) => {
     let targetDay = body.weekDay;
     // Check existing
     set.status = 400;
-    if (! await Lesson.exists({ course: targetSubject   })) { return "Course not found"; }
+    if (! await Lesson.exists({ subject: targetSubject   })) { return "Subject not found"; }
     if (! await Lesson.exists({ teacher: targetTeacher  })) { return "Teacher not found"; }
     if (! await Lesson.exists({ group: targetGroup      })) { return "Group not found"; }
     if (! await Lesson.exists({
@@ -330,7 +338,7 @@ app.delete('/lessons/', async ({ body, set }) => {
     try {
         await Lesson.deleteOne({
             teacher: targetTeacher,
-            course: targetSubject,
+            subject: targetSubject,
             group: targetGroup,
             week: targetWeek,
             weekDay: targetDay
@@ -374,11 +382,11 @@ app.patch('/classrooms/', async ({ body, set }) => {
     set.status = 200;
     return "Patch: Success";
 });
-app.patch('/courses/', async ({ body, set }) => {
+app.patch('/tags/', async ({ body, set }) => {
     set.status = 400;
     if ("" == body.target || "" == body.newName) { return "Lacking input"; }
-    if (! await Course.exists({ name: body.target })) { return "Course doesn't exist."; }
-    const target = await Course.findOne({ name: body.target });
+    if (! await Tag.exists({ name: body.target })) { return "Tag doesn't exist."; }
+    const target = await Tag.findOne({ name: body.target });
     target.name = body.newName;
     try { await target.save(); }
     catch (error) { console.log(error); return "Patch: Faliure"; }
@@ -418,7 +426,7 @@ app.patch('/lessons/', async ({ body, set }) => { // May god have mercy on my so
     return "Patch: Success";
 });
 app.patch('/groups/', async ({ body, set }) => { }); // Don't even bother
-app.patch('/students/', async ({ body, set }) => {
+app.patch('/students/', async ({ body, set }) => { // Needs editing to fit tags
     set.status = 400;
     if ("" == body.target) { return "Lacking target"; }
     if (! await Student.exists({ name: body.target })) { return "Student doesnt exist."; }
@@ -466,7 +474,7 @@ app.get('/', () => {
     let message = "";
     message += "Functions:\n";
     message += "\ng/p/d\t/classrooms";
-    message += "\ng/p/d\t/courses";
+    message += "\ng/p/d\t/tags";
     message += "\ng/p/d\t/groups";
     message += "\ng/p/d\t/lessons";
     message += "\ng/p/d\t/students";
@@ -476,7 +484,7 @@ app.get('/', () => {
 
 app.delete('/burnitall', async () => {
     await Classroom.deleteMany();
-    await Course.deleteMany();
+    await Tag.deleteMany();
     await Group.deleteMany();
     await Lesson.deleteMany();
     await Student.deleteMany();
