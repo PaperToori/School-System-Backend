@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 
-const StudentSchema = new mongoose.Schema({
+const GuardiansSchema = new mongoose.Schema({
     socialSecurityNumber: {
         type: String,
         required: true,
@@ -19,9 +19,6 @@ const StudentSchema = new mongoose.Schema({
     phoneNumber: {
         type: String,
     },
-    group: {
-        type: String,
-    },
     adress: {
         type: String,
     },
@@ -31,9 +28,9 @@ const StudentSchema = new mongoose.Schema({
     city: {
         type: String,
     },
-    guardian: {
+    child: {
         type: [String],
     },
 });
 
-export const Student = mongoose.model("Student", StudentSchema);
+export const Guardian = mongoose.model("Guardian", GuardiansSchema);
