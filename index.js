@@ -24,6 +24,14 @@ import { students_router } from "./routers/students-router.js";
 import { subjects_router } from "./routers/subjects-router.js";
 import { teacher_router } from "./routers/teachers-router.js";
 
+const TagSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true
+    }
+});
+const Tag = mongoose.model('Tag', TagSchema);
 
 // ---------------------------------------------------------
 // Server --------------------------------------------------
@@ -56,12 +64,20 @@ app.use(teacher_router);
 // ---------------------------------------------------------
 // GET REQUESTS --------------------------------------------
 
-
+app.get('/tags/', async () => {
+    return await Tag.find();
+});
 
 // ---------------------------------------------------------
 // POST REQUESTS -------------------------------------------
 
-
+app.post('/tags/', async ({ body, set }) => {
+    let newTag = new Tag();
+    newTag.name = JSON.parse(body).name;
+    try { await newTag.save(); }
+    catch (error) { console.log(error.message); set.status = 400; return "Post: Faliure"; }
+    return "Post: Success";
+});
 
 // ---------------------------------------------------------
 // DELETE REQUESTS -----------------------------------------
@@ -86,7 +102,7 @@ app.get("/", () => {
     let message = "";
     message += "Functions:\n";
     message += "\ng/p/d\t/classrooms";
-    message += "\ng/p/d\t/courses";
+    message += "\ng/p/d\t/tags";
     message += "\ng/p/d\t/groups";
     message += "\ng/p/d\t/lessons";
     message += "\ng/p/d\t/students";
@@ -96,7 +112,7 @@ app.get("/", () => {
 
 app.delete("/burnitall", async () => {
     await Classroom.deleteMany();
-    await Course.deleteMany();
+    await Tag.deleteMany();
     await Group.deleteMany();
     await Lesson.deleteMany();
     await Student.deleteMany();
