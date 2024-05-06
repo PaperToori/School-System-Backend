@@ -10,8 +10,8 @@ export const tags_router = new Elysia({ prefix: '/tags' })
         let parsedBody = JSON.parse(body);
         // Input from body
         let newTag = new Tag();
-        newTag.name = parsedBody.name;
-        newTag.gmail = parsedBody.gmail;
+        newTag.name        = parsedBody.name;
+        newTag.gmail       = parsedBody.gmail;
         newTag.phoneNumber = parsedBody.phoneNumber;
         // Save!
         try {
@@ -40,4 +40,6 @@ export const tags_router = new Elysia({ prefix: '/tags' })
         }
         set.status = 200;
         return "Deletion: Success";
-    });
+    })
+    .patch("/", async ({ body, set }) => {});
+    

@@ -6,10 +6,10 @@ export const groups_router = new Elysia({ prefix: '/groups' })
         return await Group.find();
     })
     .post("/", async ({ body, set }) => {
-        // ...Not yet
+        let parsedBody = JSON.parse(body);
         let newGroup = new Group();
-        newGroup.name = body.name;
-        newGroup.members = [...body.members];
+        newGroup.name = parsedBody.name;
+        newGroup.members = [...parsedBody.members];
 
         try {
             await newGroup.save();
@@ -18,8 +18,8 @@ export const groups_router = new Elysia({ prefix: '/groups' })
             set.status = 400;
         }
     })
-    .delete("/groups/", async ({ body, set }) => {
-        let target = body.name;
+    .delete("/", async ({ body, set }) => {
+        let target = JSON.parse(body).name;
         set.status = 400;
         if ("" == target) {
             return "No group was specified.";
