@@ -4,14 +4,12 @@ import { cors } from "@elysiajs/cors";
 //Schemas
 import { UserDB } from "./schemas/users.js";
 import { Classroom } from "./schemas/classroom.js";
-import { Course } from "./schemas/course.js";
 import { Group } from "./schemas/group.js";
 import { Lesson } from "./schemas/lesson.js";
 import { Student } from "./schemas/student.js";
 import { Subject } from "./schemas/subject.js";
-import { Teacher } from "./schemas/teacher.js";
-import { Teacher } from "./schemas/teacher.js";
 import { Tag } from "./schemas/tag.js";
+import { Teacher } from "./schemas/teacher.js";
 import { Guardian } from "./schemas/guardian.js";
 //import { LessonTemplate } from "./schemas/lessonTemplate.js"; //not in use
 //import { LessonTime } from "./schemas/lessonTime.js"; //not in use
@@ -19,7 +17,7 @@ import { Guardian } from "./schemas/guardian.js";
 import { test_router } from "./routers/test-router.js";
 import { auth_router } from "./routers/auth-router.js";
 import { classrooms_router } from "./routers/classrooms-router.js";
-import { courses_router } from "./routers/courses-router.js";
+import { tags_router } from "./routers/tags-router.js";
 import { groups_router } from "./routers/groups-router.js";
 import { lessons_router } from "./routers/lessons-router.js";
 import { students_router } from "./routers/students-router.js";
@@ -47,7 +45,7 @@ app.use(cors());
 app.use(test_router);
 app.use(auth_router);
 app.use(classrooms_router);
-app.use(courses_router);
+app.use(tags_router);
 app.use(groups_router);
 app.use(lessons_router);
 app.use(students_router);
