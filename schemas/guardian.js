@@ -13,7 +13,11 @@ const GuardiansSchema = new mongoose.Schema({
     tags: {
         type: [String],
     },
-    gmail: {
+    user: {
+        type: String,
+        required: true,
+    },
+    email: {
         type: String,
     },
     phoneNumber: {

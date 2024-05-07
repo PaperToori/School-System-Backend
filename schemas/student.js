@@ -10,10 +10,14 @@ const StudentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    user: {
+        type: String,
+        required: true,
+    },
     tags: {
         type: [String],
     },
-    gmail: {
+    email: {
         type: String,
     },
     phoneNumber: {

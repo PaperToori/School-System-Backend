@@ -7,7 +7,6 @@ let serviceAccount = require("../desk-17e4d-firebase-adminsdk-xgca0-0de33bf30a.j
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
-
 export async function Authenticator(permission, id) {
     let permitted = false;
     let uid = null;

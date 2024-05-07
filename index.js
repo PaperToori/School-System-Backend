@@ -10,7 +10,6 @@ import { Lesson } from "./schemas/lesson.js";
 import { Student } from "./schemas/student.js";
 import { Subject } from "./schemas/subject.js";
 import { Teacher } from "./schemas/teacher.js";
-import { Teacher } from "./schemas/teacher.js";
 import { Tag } from "./schemas/tag.js";
 import { Guardian } from "./schemas/guardian.js";
 //import { LessonTemplate } from "./schemas/lessonTemplate.js"; //not in use
