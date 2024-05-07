@@ -8,16 +8,17 @@ export const lessons_router = new Elysia({ prefix: '/lessons' })
     .post("/", async ({ body, set }) => {
         // Not yet
         set.status = 400;
+        parsedBody = JSON.parse(body);
         // Input from body
         let newLesson = new Lesson();
-        newLesson.classroom = body.classroom;
-        newLesson.subject = body.subject;
-        newLesson.teacher = body.teacher;
-        newLesson.group = body.group;
-        newLesson.week = body.week;
-        newLesson.weekDay = body.weekDay;
-        newLesson.startTime = body.startTime;
-        newLesson.endTime = body.endTime;
+        newLesson.classroom = parsedBody.classroom;
+        newLesson.subject   = parsedBody.subject;
+        newLesson.teacher   = parsedBody.teacher;
+        newLesson.group     = parsedBody.group;
+        newLesson.week      = parsedBody.week;
+        newLesson.weekDay   = parsedBody.weekDay;
+        newLesson.startTime = parsedBody.startTime;
+        newLesson.endTime   = parsedBody.endTime;
         // Check for timetravel
         if (newLesson.startTime > newLesson.endTime) {
             return "Time travel detected.";
@@ -34,12 +35,13 @@ export const lessons_router = new Elysia({ prefix: '/lessons' })
         return "Post: Success";
     })
     .delete("/", async ({ body, set }) => {
+        let parsedBody = JSON.parse(body);
         // Input from body
-        let targetSubject = body.subject;
-        let targetTeacher = body.teacher;
-        let targetGroup = body.group;
-        let targetWeek = body.week;
-        let targetDay = body.weekDay;
+        let targetSubject = parsedBody.subject;
+        let targetTeacher = parsedBody.teacher;
+        let targetGroup   = parsedBody.group;
+        let targetWeek    = parsedBody.week;
+        let targetDay     = parsedBody.weekDay;
         // Check existing
         set.status = 400;
         if (!(await Lesson.exists({ course: targetSubject }))) {
@@ -75,7 +77,7 @@ export const lessons_router = new Elysia({ prefix: '/lessons' })
         set.status = 200;
         return "Deletion: Success";
     })
-    .patch("/", async ({ body, set }) => {
+    .patch("/", async ({ body, set }) => { // Never used, never updated to work...
         // May god have mercy on my soul
         set.status = 400;
         if (

@@ -18,7 +18,7 @@ export const classrooms_router = new Elysia({ prefix: '/classrooms' })
         return "Post: Success";
     })
     .delete("/", async ({ body, set }) => {
-        let target = body.name;
+        let target = JSON.parse(body).name;
         set.status = 400;
         if ("" == target) {
             return "No classroom was specified.";
@@ -35,7 +35,7 @@ export const classrooms_router = new Elysia({ prefix: '/classrooms' })
         set.status = 200;
         return "Deletion: Success";
     })
-    .patch("/", async ({ body, set }) => {
+    .patch("/", async ({ body, set }) => { // Currently won't work, but isn't used either.
         set.status = 400;
         if ("" == body.target || "" == body.newName) {
             return "Lacking input";

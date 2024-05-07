@@ -86,7 +86,7 @@ export const students_router = new Elysia({ prefix: '/students' })
         
     })
     .delete("/", async ({ body, set }) => {
-        let target = body.name;
+        let target = JSON.parse(body).name;
         set.status = 400;
         if ("" == target) {
             return "No student was specified.";
@@ -103,7 +103,7 @@ export const students_router = new Elysia({ prefix: '/students' })
         set.status = 200;
         return "Deletion: Success";
     })
-    .patch("/", async ({ body, set }) => {
+    .patch("/", async ({ body, set }) => { // Never used, never fixed
         set.status = 400;
         if ("" == body.target) {
             return "Lacking target";

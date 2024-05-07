@@ -18,7 +18,7 @@ export const subjects_router = new Elysia({ prefix: '/subjects' })
         return "Post: Success";
     })
     .delete("/", async ({ body, set }) => {
-        let target = body.name;
+        let target = JSON.parse(body).name;
         set.status = 400;
         if ("" == target) {
             return "No subject was specified.";
