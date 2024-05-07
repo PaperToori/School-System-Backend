@@ -38,7 +38,7 @@ export const students_router = new Elysia({ prefix: '/students' })
         const group = await Group.find({ name: parsedBody.group });
         console.log(group);
         if (group != undefined) {
-            newStudent.group = parsedBody.group.toUpperCase();
+            newStudent.group = parsedBody.group;
             let alreadyInGroup = false;
             if (group.members != undefined) {
                 for (let i = 0; i < group.members.length; i++) {
