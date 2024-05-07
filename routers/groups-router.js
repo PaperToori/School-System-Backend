@@ -8,7 +8,7 @@ export const groups_router = new Elysia({ prefix: '/groups' })
     .post("/", async ({ body, set }) => {
         let parsedBody = JSON.parse(body);
         let newGroup = new Group();
-        newGroup.name = parsedBody.name;
+        newGroup.name = parsedBody.name.toUpperCase();
         newGroup.members = [...parsedBody.members];
 
         try {

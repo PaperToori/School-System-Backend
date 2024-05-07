@@ -2,6 +2,7 @@ import { Elysia } from 'elysia'
 import { Student } from "../schemas/student.js";
 import { Guardian } from "../schemas/guardian.js";
 import { UserDB } from "../schemas/users.js";
+import { Group } from "../schemas/group.js";
 import admin from 'firebase-admin';
 
 export const students_router = new Elysia({ prefix: '/students' })
@@ -33,6 +34,23 @@ export const students_router = new Elysia({ prefix: '/students' })
             //guardian does not exsit yet, we should prompt user to fill out contact information for guardian
             //set.status = 501;
             //return("this student doesnt have a guradian which needs to be implemented");
+        }
+        const group = await Group.find({name: parsedBody.group.toUpperCase()});
+        if(group != undefined){
+            newStudent.group = parsedBody.group.toUpperCase();
+            let alreadyInGroup = false;
+            for(let i = 0; i < group.members.length; i++){
+                if(newStudent.id === group.members[i]){
+                    alreadyInGroup = true;
+                }
+            }
+            if(alreadyInGroup === false){
+                group.members.push(newStudent.id)
+            }
+        }
+        else{
+            set.status ="Bad Request"
+            return "group does not exsist";
         }
         // if the student for some reason already has an account registered as guardian then the guardian and the student are assigned to the same user
         if (newStudent.user != undefined) {
