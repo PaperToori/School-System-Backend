@@ -35,7 +35,7 @@ export const classrooms_router = new Elysia({ prefix: '/classrooms' })
         set.status = 200;
         return "Deletion: Success";
     })
-    .patch("/", async ({ body, set }) => { // Currently won't work, but isn't used either.
+    .patch("/", async ({ body, set }) => {
         let parsedBody = JSON.parse(body);
         set.status = 400;
         if ("" == parsedBody.target || "" == parsedBody.newName) {
