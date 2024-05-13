@@ -15,7 +15,7 @@ import { Guardian } from "./schemas/guardian.js";
 //import { LessonTime } from "./schemas/lessonTime.js"; //not in use
 //routers
 import { test_router } from "./routers/test-router.js";
-import { auth_router } from "./routers/auth-router.js";
+import { admin_router } from "./routers/admin-router.js";
 import { classrooms_router } from "./routers/classrooms-router.js";
 import { tags_router } from "./routers/tags-router.js";
 import { groups_router } from "./routers/groups-router.js";
@@ -43,7 +43,7 @@ const app = new Elysia();
 app.use(cors());
 
 app.use(test_router);
-app.use(auth_router);
+app.use(admin_router);
 app.use(classrooms_router);
 app.use(tags_router);
 app.use(groups_router);
