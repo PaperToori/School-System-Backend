@@ -36,14 +36,15 @@ export const classrooms_router = new Elysia({ prefix: '/classrooms' })
         return "Deletion: Success";
     })
     .patch("/", async ({ body, set }) => { // Currently won't work, but isn't used either.
+        let parsedBody = JSON.parse(body);
         set.status = 400;
-        if ("" == body.target || "" == body.newName) {
+        if ("" == parsedBody.target || "" == parsedBody.newName) {
             return "Lacking input";
         }
-        if (!(await Classroom.exists({ name: body.target }))) {
+        if (!(await Classroom.exists({ name: parsedBody.target }))) {
             return "Classroom doesnt exist.";
         }
-        const target = await Classroom.findOne({ name: body.target });
+        const target = await Classroom.findOne({ name: parsedBody.target });
         target.name = body.newName;
         try {
             await target.save();
