@@ -35,6 +35,23 @@ export const subjects_router = new Elysia({ prefix: '/subjects' })
         set.status = 200;
         return "Deletion: Success";
     })
-    .patch("/", async () => {
-        return "not implemented yet";
+    .patch("/", async ({ body, set }) => {
+        let parsedBody = JSON.parse(body);
+        set.status = 400;
+        if ("" == parsedBody.target || "" == parsedBody.newName) {
+            return "Lacking input";
+        }
+        if (!(await Subject.exists({ name: parsedBody.target }))) {
+            return "Classroom doesnt exist.";
+        }
+        const target = await Subject.findOne({ name: parsedBody.target });
+        target.name = parsedBody.newName;
+        try {
+            await target.save();
+        } catch (error) {
+            console.log(error);
+            return "Patch: Faliure";
+        }
+        set.status = 200;
+        return "Patch: Success";
     });
