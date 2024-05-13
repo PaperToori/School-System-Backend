@@ -45,7 +45,7 @@ export const classrooms_router = new Elysia({ prefix: '/classrooms' })
             return "Classroom doesnt exist.";
         }
         const target = await Classroom.findOne({ name: parsedBody.target });
-        target.name = body.newName;
+        target.name = parsedBody.newName;
         try {
             await target.save();
         } catch (error) {
