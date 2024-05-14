@@ -112,7 +112,6 @@ export const admin_router = new Elysia({ prefix: '/admin' })
                             return "user not linked to any profile"
                         }
                         let oldProfile;
-                        console.log(parsedBody);
                         let profileID = user.dataType[parsedBody.profileNumber].split(":");
                         profileID = profileID[1];
                         if (user.dataType[parsedBody.profileNumber][0] == "S") {

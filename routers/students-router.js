@@ -11,7 +11,6 @@ export const students_router = new Elysia({ prefix: '/students' })
         {
             async beforeHandle({ set, headers }) {
                 let id = headers.id;
-                console.log(id);
                 if (await Authenticator(2, id) == false) {
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');

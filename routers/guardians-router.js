@@ -70,9 +70,11 @@ export const guardians_router = new Elysia({ prefix: '/guardians' })
                     }
                     if (newGuardian.user != undefined) {
                         const user = UserDB.find({ _id: newGuardian.user });
-                        if (user != null && user.permission < 1) {
-                            user.permission = 1;
-                            user.dataType.push("S:" + newGuardian._id);
+                        if (user != null) {
+                            if (user.permission < 1) {
+                                user.permission = 1;
+                            }
+                            user.dataType.push("G:" + newGuardian._id);
                             try {
                                 await user.save();
                             } catch (error) {
@@ -120,7 +122,7 @@ export const guardians_router = new Elysia({ prefix: '/guardians' })
                 .patch("/", async ({ set, body }) => {
                     console.log("attempting to patch");
                     set.status = 400;
-                    
+
                     let parsedBody = JSON.parse(body);
                     let guardian = await Guardian.findOne({ socialSecurityNumber: parsedBody.id });
                     const child = await Student.findOne({ socialSecurityNumber: parsedBody.childID });
