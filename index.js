@@ -24,7 +24,7 @@ import { students_router } from "./routers/students-router.js";
 import { subjects_router } from "./routers/subjects-router.js";
 import { teacher_router } from "./routers/teachers-router.js";
 import { guardians_router } from "./routers/guardians-router.js";
-
+import { course_router } from "./routers/course-router.js";
 
 // ---------------------------------------------------------
 // Server --------------------------------------------------
@@ -52,7 +52,7 @@ app.use(students_router);
 app.use(guardians_router)
 app.use(subjects_router);
 app.use(teacher_router);
-
+app.use(course_router);
 
 // ---------------------------------------------------------
 // GET REQUESTS --------------------------------------------
