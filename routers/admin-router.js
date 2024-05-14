@@ -61,9 +61,8 @@ export const admin_router = new Elysia({ prefix: '/admin' })
     .guard(
         {
             async beforeHandle({ set, headers }) {
-                console.log("receieved");
                 let id = headers.id;
-                if (await Authenticator(-1, id) == false) {
+                if (await Authenticator(3, id) == false) {
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
@@ -78,6 +77,76 @@ export const admin_router = new Elysia({ prefix: '/admin' })
                 })
                 .get("/user/", async () => {
                     return await UserDB.find();
+                })
+    )
+    .guard(
+        {
+            async beforeHandle({ set, headers }) {
+                console.log("receieved");
+                let id = headers.id;
+                if (await Authenticator(1, id) == false) {
+                    console.log("NOT APPROVED!");
+                    return (set.status = 'Unauthorized');
+                }
+                console.log("APPROVED");
+            }
+        },
+        (App) =>
+            App
+                .patch("/profile/", async ({ set, body, headers }) => {
+                    let id = headers.id;
+                    let uid = null;
+                    let parsedBody = JSON.parse(body);
+                    try {
+                        await admin.auth().verifyIdToken(id)
+                            .then((decodedToken) => {
+                                uid = decodedToken.uid;
+                            })
+                    }
+                    catch (error) {
+                        console.log(`Error in Authenticator function.\nError message: "${error.message}"`);
+                    }
+                    const user = await UserDB.findOne({ userID: uid });
+                    if (user != null) {
+                        if (user.dataType.length === 0) {
+                            return "user not linked to any profile"
+                        }
+                        let oldProfile;
+                        console.log(parsedBody);
+                        let profileID = user.dataType[parsedBody.profileNumber].split(":");
+                        profileID = profileID[1];
+                        if (user.dataType[parsedBody.profileNumber][0] == "S") {
+                            oldProfile = await Student.findOne({ _id: profileID });
+                            oldProfile.phoneNumber = parsedBody.profile.phoneNumber;
+                            oldProfile.email = parsedBody.profile.email;
+                        }
+                        else if (user.dataType[parsedBody.profileNumber][0] == "G") {
+                            oldProfile = await Guardian.findOne({ _id: profileID });
+                            oldProfile.phoneNumber = parsedBody.profile.phoneNumber;
+                            oldProfile.email = parsedBody.profile.email;
+                            oldProfile.name = parsedBody.profile.name;
+                            oldProfile.socialSecurityNumber = parsedBody.profile.socialSecurityNumber;
+                            oldProfile.adress = parsedBody.profile.adress;
+                            oldProfile.zip = parsedBody.profile.zip;
+                            //Should add the ability to change values for their kid
+                        }
+                        else if (user.dataType[parsedBody.profileNumber][0] == "T") {
+                            oldProfile = await Teacher.findOne({ _id: profileID });
+                            oldProfile.phoneNumber = parsedBody.profile.phoneNumber;
+                            oldProfile.gmail = parsedBody.profile.email;
+                        }
+                        else {
+                            return JSON.stringify("Not logged in");
+                        }
+                        try {
+                            await oldProfile.save();
+                            set.status = 200;
+                            return "Post: Success";
+                        } catch (error) {
+                            console.log(error.message);
+                            return "Post: Faliure";
+                        }
+                    }
                 })
     )
     .get("/profile/", async ({ set, headers }) => {
@@ -109,17 +178,14 @@ export const admin_router = new Elysia({ prefix: '/admin' })
                 if (user.dataType[i][0] == "S") {
                     response.profile[i] = await Student.findOne({ _id: profileID });
                     response.profileType[i] = "Elev";
-                    console.log(response);
                 }
                 else if (user.dataType[i][0] == "G") {
                     response.profile[i] = await Guardian.findOne({ _id: profileID });
                     response.profileType[i] = "Vårdnashavare";
-                    console.log(response);
                 }
                 else if (user.dataType[i][0] == "T") {
                     response.profile[i] = await Teacher.findOne({ _id: profileID });
                     response.profileType[i] = "Lärare";
-                    console.log(response);
                 }
                 else {
                     set.status = "Internal Server Error";
@@ -132,29 +198,6 @@ export const admin_router = new Elysia({ prefix: '/admin' })
         else {
             return JSON.stringify("Not logged in");
         }
-    })
-    .post("/profile/", async ({ set, body, headers }) => {
-        // guard this thing
-
-        // make sure no inapropriate data mad it through
-        // const user = await UserDB.findOne({ userID: uid });
-        // if (user.dataType[i][0] == "S") {
-        //     response.profile[i] = await Student.findOne({ _id: profileID });
-        //     response.profileType[i] = "Elev";
-        //     console.log(response);
-        // }
-        // else if (user.dataType[i][0] == "G") {
-        //     response.profile[i] = await Guardian.findOne({ _id: profileID });
-        //     response.profileType[i] = "Vårdnashavare";
-        //     console.log(response);
-        // }
-        // else if (user.dataType[i][0] == "T") {
-        //     response.profile[i] = await Teacher.findOne({ _id: profileID });
-        //     response.profileType[i] = "Lärare";
-        //     console.log(response);
-        // }
-        
-        return set.status="OK";
     })
     .get("/", async () => {
         return "not protected route";
