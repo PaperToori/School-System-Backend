@@ -11,7 +11,6 @@ export const students_router = new Elysia({ prefix: '/students' })
         {
             async beforeHandle({ set, headers }) {
                 let id = headers.id;
-                console.log(id);
                 if (await Authenticator(2, id) == false) {
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
@@ -51,7 +50,7 @@ export const students_router = new Elysia({ prefix: '/students' })
                     newStudent.adress = parsedBody.adress;
                     newStudent.zip = parsedBody.zip;
                     newStudent.city = parsedBody.city;
-                    const guardian = await Guardian.findOne({ name: parsedBody.guardian });
+                    const guardian = await Guardian.findOne({ socialSecurityNumber: parsedBody.guardianID });
                     if (guardian != null) {
                         newStudent.guardian = guardian._id;
                         if (guardian.socialSecurityNumber == parsedBody.socialSecurityNumber) {
@@ -59,9 +58,8 @@ export const students_router = new Elysia({ prefix: '/students' })
                         }
                     }
                     else {
-                        //guardian does not exsit yet, we should prompt user to fill out contact information for guardian
-                        //set.status = 501;
-                        //return("this student doesnt have a guradian which needs to be implemented");
+                        // student doesnt have a guardian
+                        set.status = 501;
                     }
                     const group = await Group.find({ name: parsedBody.group });
                     console.log(group);
@@ -136,7 +134,6 @@ export const students_router = new Elysia({ prefix: '/students' })
                         console.log(error.message);
                         return "Post: Faliure";
                     }
-
                 })
                 .delete("/", async ({ body, set }) => {
                     let target = JSON.parse(body).name;

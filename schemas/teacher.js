@@ -9,17 +9,31 @@ const TeacherSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
     },
     user: {
         type: String,
         required: true,
     },
-    gmail: {
+    email: {
         type: String,
     },
     phoneNumber: {
         type: String,
+    },
+    tags: {
+        type: [String],
+    },
+    adress: {
+        type: String,
+    },
+    zip: {
+        type: String,
+    },
+    city: {
+        type: String,
+    },
+    course: {
+        type: [String],
     },
 });
 
