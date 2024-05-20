@@ -12,7 +12,6 @@ export const classrooms_router = new Elysia({ prefix: '/classrooms' })
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
-                console.log("APPROVED");
             }
         },
         (App) =>
@@ -29,7 +28,6 @@ export const classrooms_router = new Elysia({ prefix: '/classrooms' })
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
-                console.log("APPROVED");
             }
         },
         (App) =>

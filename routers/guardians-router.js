@@ -15,7 +15,6 @@ export const guardians_router = new Elysia({ prefix: '/guardians' })
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
-                console.log("APPROVED");
             }
         },
         (App) =>

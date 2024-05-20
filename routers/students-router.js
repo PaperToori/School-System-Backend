@@ -15,7 +15,6 @@ export const students_router = new Elysia({ prefix: '/students' })
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
-                console.log("APPROVED");
             }
         },
         (App) =>
@@ -31,7 +30,6 @@ export const students_router = new Elysia({ prefix: '/students' })
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
-                console.log("APPROVED");
             }
         },
         (App) =>

@@ -66,7 +66,6 @@ export const admin_router = new Elysia({ prefix: '/admin' })
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
-                console.log("APPROVED");
             }
         },
         (App) =>
@@ -88,7 +87,6 @@ export const admin_router = new Elysia({ prefix: '/admin' })
                     console.log("NOT APPROVED!");
                     return (set.status = 'Unauthorized');
                 }
-                console.log("APPROVED");
             }
         },
         (App) =>
