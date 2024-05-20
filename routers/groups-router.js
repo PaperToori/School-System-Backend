@@ -62,8 +62,14 @@ export const groups_router = new Elysia({ prefix: '/groups' })
                     set.status = 200;
                     return "Deletion: Success";
                 })
-                .patch("/", async () => {
-                    return "not implemented yet";
+                .patch("/", async ({ set, body }) => { // This request is never registered for some reason
+                    set.status = 400;
+                    let parsedBody = JSON.parse(body);
+                    console.log("fetch accepted");
+                    console.log(parsedBody.targetId);
+                    console.log(parsedBody.newName);
+                    console.log(parsedBody.newMembers);
+                    return "Test complete";
                 })
     )
     ;
